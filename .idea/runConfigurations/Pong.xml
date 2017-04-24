@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Pong" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application" singleton="true">
+    <option name="arguments" value="roms/pong.rom" />
+    <option name="filePath" value="$PROJECT_DIR$/bin/chip8.dart" />
+    <method />
+  </configuration>
+</component>

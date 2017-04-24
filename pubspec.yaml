@@ -1,0 +1,15 @@
+name: chip8
+description: CHIP-8 VM in Dart.
+version: 0.0.0
+author: Tobe O <thosakwe@gmail.com>
+homepage: https://github.com/thosakwe/chip8
+environment:
+  sdk: ">=1.19.0"
+dependencies:
+  args: ^0.13.4
+  func: ^1.0.0
+dev_dependencies:
+  browser: ^0.10.0
+  test: ^0.12.0
+executables:
+  chip8: chip8
