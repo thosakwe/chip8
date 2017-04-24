@@ -2,9 +2,9 @@ import 'exception.dart';
 
 class ChipOpcode {
   final ChipOpcodeType type;
-  final int operand;
+  final int operand1, operand2;
 
-  ChipOpcode(this.type, [this.operand]);
+  ChipOpcode(this.type, [this.operand1, this.operand2]);
 
   static ChipOpcode readOpcode(List<int> program, int index) {
     int b = program[index];
@@ -13,16 +13,19 @@ class ChipOpcode {
       case 0x00EE:
         return new ChipOpcode(
             ChipOpcodeType.RETURN, _readNext(program, index + 1));
+      case 0x00E0:
+        return new ChipOpcode(ChipOpcodeType.CLEAR);
     }
 
     var front = b >> 4;
-    print(front);
 
     if (front == 6) {
-      // Maybe call
-      // TODO: Fix
-      int nReg = (b.toUnsigned(8) & 0x00001111);
-      print('reg: ${nReg.toRadixString(16)}');
+      return new ChipOpcode(ChipOpcodeType.SET_CONST, b.toUnsigned(4),
+          _readNext(program, index + 1));
+    }
+
+    if (front == 0xA) {
+      int left = b.toUnsigned(4) >> 4;
     }
 
     return new ChipOpcode(ChipOpcodeType.INVALID, b);
@@ -38,4 +41,4 @@ class ChipOpcode {
   }
 }
 
-enum ChipOpcodeType { RETURN, INVALID }
+enum ChipOpcodeType { INVALID, CALL, CLEAR, RETURN, SET_ADDR, SET_CONST }

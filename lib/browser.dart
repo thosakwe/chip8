@@ -5,9 +5,9 @@ import 'chip8.dart';
 export 'chip8.dart';
 
 Chip8 createVm() =>
-    new Chip8(new IoConsole(), new IoKeyboard(), new IoScreen());
+    new Chip8(new BrowserConsole(), new BrowserKeyboard(), new BrowserScreen());
 
-class IoConsole implements ChipConsole {
+class BrowserConsole implements ChipConsole {
   @override
   void error(Object object) => stderr.writeln(object);
 
@@ -18,7 +18,7 @@ class IoConsole implements ChipConsole {
   void log(Object object) => stdout.writeln(object);
 }
 
-class IoKeyboard extends ChipKeyboard {
+class BrowserKeyboard extends ChipKeyboard {
   final Queue<int> _buf = new Queue<int>();
   final Queue<Completer<int>> _queue = new Queue<Completer<int>>();
 
@@ -45,9 +45,9 @@ class IoKeyboard extends ChipKeyboard {
   }
 }
 
-class IoScreen implements ChipScreen {
+class BrowserScreen implements ChipScreen {
   @override
   void clear() {
-    print('Can\'t clear screen...');
+    // TODO: implement clear
   }
 }
