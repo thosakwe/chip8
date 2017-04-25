@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
+import 'package:charcode/ascii.dart';
 import 'chip8.dart';
 export 'chip8.dart';
 
@@ -21,12 +22,18 @@ class IoConsole implements ChipConsole {
 class IoKeyboard extends ChipKeyboard {
   final Queue<int> _buf = new Queue<int>();
   final Queue<Completer<int>> _queue = new Queue<Completer<int>>();
+  StreamSubscription<int> _sub;
+
+  IoKeyboard() {
+    _sub = stdin.expand((l) => l).listen(injectKey);
+  }
 
   @override
   void injectKey(int keyCode) {
     if (_queue.isNotEmpty)
       _queue.removeFirst().complete(keyCode);
-    else _buf.add(keyCode);
+    else
+      _buf.add(keyCode);
   }
 
   @override
@@ -39,15 +46,36 @@ class IoKeyboard extends ChipKeyboard {
     else {
       var c = new Completer<int>();
       _queue.add(c);
-      _queue.add(c);
+      stdout.write('\rEnter key(s):');
       return c;
     }
+  }
+
+  @override
+  Future close() async {
+    _sub.cancel();
   }
 }
 
 class IoScreen implements ChipScreen {
+  static int width = 64, height = 32;
+  final List<List<int>> grid = new List<List<int>>.generate(height, (_) {
+    return new List<int>.filled(width, $space);
+  });
+
   @override
   void clear() {
-    print('Can\'t clear screen...');
+    grid.forEach((g) => g.fillRange(0, g.length, $space));
+    drawScreen();
+  }
+
+  void drawScreen() {
+    for (int row = 0; row < height; row++) {
+      for (int col = 0; col < width; col++) {
+        stdout.writeCharCode(grid[row][col]);
+      }
+
+      stdout.writeln();
+    }
   }
 }

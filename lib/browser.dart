@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:io';
+import 'dart:html';
 import 'chip8.dart';
 export 'chip8.dart';
 
@@ -9,24 +9,36 @@ Chip8 createVm() =>
 
 class BrowserConsole implements ChipConsole {
   @override
-  void error(Object object) => stderr.writeln(object);
+  void error(Object object) => window.console.error(object);
 
   @override
-  void info(Object object) => log(object);
+  void info(Object object) => window.console.info(object);
 
   @override
-  void log(Object object) => stdout.writeln(object);
+  void log(Object object) => window.console.log(object);
 }
 
 class BrowserKeyboard extends ChipKeyboard {
+  static const List<int> KEYS = const [
+    KeyCode.NUM_TWO,
+    KeyCode.NUM_FOUR,
+    KeyCode.NUM_SIX,
+    KeyCode.NUM_EIGHT
+  ];
+
   final Queue<int> _buf = new Queue<int>();
   final Queue<Completer<int>> _queue = new Queue<Completer<int>>();
+
+  BrowserKeyboard() {
+    document..onKeyDown.listen((e) {})..onKeyUp.listen((e) {});
+  }
 
   @override
   void injectKey(int keyCode) {
     if (_queue.isNotEmpty)
       _queue.removeFirst().complete(keyCode);
-    else _buf.add(keyCode);
+    else
+      _buf.add(keyCode);
   }
 
   @override
@@ -42,6 +54,10 @@ class BrowserKeyboard extends ChipKeyboard {
       _queue.add(c);
       return c;
     }
+  }
+  @override
+  Future close() {
+    // TODO: implement close
   }
 }
 

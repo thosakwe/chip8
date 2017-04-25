@@ -32,5 +32,8 @@ main(List<String> args) async {
       ..writeln('usage: chip8 [options] <input file>')
       ..writeln(ARG_PARSER.usage);
     exit(1);
+  } catch (e) {
+    stderr.writeln(e);
+    exit(1);
   }
 }

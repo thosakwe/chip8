@@ -10,10 +10,10 @@ class ChipOpcode {
     int b = program[index];
 
     switch (b) {
-      case 0x00EE:
+      case 0xEE:
         return new ChipOpcode(
             ChipOpcodeType.RETURN, _readNext(program, index + 1));
-      case 0x00E0:
+      case 0xE0:
         return new ChipOpcode(ChipOpcodeType.CLEAR);
     }
 
@@ -25,7 +25,10 @@ class ChipOpcode {
     }
 
     if (front == 0xA) {
-      int left = b.toUnsigned(4) >> 4;
+      int left = b.toUnsigned(4) << 12;
+      int right = _readNext(program, index + 1);
+      int nnn = left + right;
+      return new ChipOpcode(ChipOpcodeType.SET_ADDR, nnn);
     }
 
     return new ChipOpcode(ChipOpcodeType.INVALID, b);

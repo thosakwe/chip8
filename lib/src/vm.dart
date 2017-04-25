@@ -49,11 +49,12 @@ class Chip8 {
 
       console.error('Register I: 0x${regI.toRadixString(16)}');
       for (int i = 0; i < registers.length; i++) {
-        console.error('Register V$i: 0x${registers[i].toRadixString(16)}');
+        console.error('Register V${i.toRadixString(16).toUpperCase()}: 0x${registers[i].toRadixString(16)}');
       }
     } finally {
       delayTimer.stop();
       soundTimer.stop();
+      await keyboard.close();
     }
 
     return success;
@@ -64,6 +65,8 @@ class Chip8 {
       throw new ChipException('Jump target offset out of range', offset);
     } else {
       for (int i = offset; i < program.length; i++) {
+        if (program[i] == 0) continue;
+
         _callStack.addLast(i);
         var op = _current = ChipOpcode.readOpcode(program, i);
         if (op.type != ChipOpcodeType.INVALID && op.operand1 != null) i++;
@@ -92,6 +95,8 @@ class Chip8 {
       var cur = _callStack.removeLast(), offset = _callStack.removeLast();
       _callStack.addLast(cur);
       return await jump(offset, program);
+    } else if (op.type == ChipOpcodeType.SET_ADDR) {
+      regI = op.operand1;
     } else if (op.type == ChipOpcodeType.SET_CONST) {
       int target = op.operand1;
       if (target < 0 || target > 15)

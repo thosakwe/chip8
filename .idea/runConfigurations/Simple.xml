@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Simple" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application" singleton="true">
+    <option name="arguments" value="roms/simple.rom" />
+    <option name="filePath" value="$PROJECT_DIR$/bin/chip8.dart" />
+    <method />
+  </configuration>
+</component>
