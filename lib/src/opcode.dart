@@ -2,9 +2,9 @@ import 'exception.dart';
 
 class ChipOpcode {
   final ChipOpcodeType type;
-  final int operand1, operand2;
+  final int operand1, operand2, operand3;
 
-  ChipOpcode(this.type, [this.operand1, this.operand2]);
+  ChipOpcode(this.type, [this.operand1, this.operand2, this.operand3]);
 
   static ChipOpcode readOpcode(List<int> program, int index) {
     int b = program[index];
@@ -19,19 +19,46 @@ class ChipOpcode {
 
     var front = b >> 4;
 
-    if (front == 6) {
+    if (front == 0x6) {
       return new ChipOpcode(ChipOpcodeType.SET_CONST, b.toUnsigned(4),
           _readNext(program, index + 1));
     }
 
+    if (front == 0x2) {
+      return new ChipOpcode(ChipOpcodeType.CALL, _readNnn(b, program, index));
+    }
+
     if (front == 0xA) {
-      int left = b.toUnsigned(4) << 12;
-      int right = _readNext(program, index + 1);
-      int nnn = left + right;
-      return new ChipOpcode(ChipOpcodeType.SET_ADDR, nnn);
+      return new ChipOpcode(
+          ChipOpcodeType.SET_ADDR, _readNnn(b, program, index));
+    }
+
+    if (front == 0xD) {
+      int x = b.toUnsigned(4);
+      int next = _readNext(program, index + 1);
+      int y = next >> 4;
+      int h = next.toUnsigned(4);
+      return new ChipOpcode(ChipOpcodeType.DRAW, x, y, h);
     }
 
     return new ChipOpcode(ChipOpcodeType.INVALID, b);
+  }
+
+  static int _readNnn(int b, List<int> program, int index) {
+    //print('b: ${b.toRadixString(2)}');
+    //int front = b >> 4;
+    //print('front: ${front.toRadixString(2)}');
+    //print('front: 0x${front.toRadixString(16)}');
+    int last4 = b & 0x0F << 16;
+    //print('last4: ${last4.toRadixString(2)}');
+    int next = _readNext(program, index + 1);
+    //print('next: ${next.toRadixString(2)}');
+    //print('last4 padded: ${(last4 << 8).toRadixString(2)}');
+    int nnn = (last4 << 8) + next;
+    //print('NNN: ${nnn.toRadixString(2)}');
+    //print('NNN: 0x${nnn.toRadixString(16)}');
+    //print('NNN: $nnn');
+    return nnn;
   }
 
   static int _readNext(List<int> program, int index) {
@@ -44,4 +71,4 @@ class ChipOpcode {
   }
 }
 
-enum ChipOpcodeType { INVALID, CALL, CLEAR, RETURN, SET_ADDR, SET_CONST }
+enum ChipOpcodeType { INVALID, CALL, CLEAR, DRAW, RETURN, SET_ADDR, SET_CONST }

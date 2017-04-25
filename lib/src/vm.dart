@@ -35,7 +35,7 @@ class Chip8 {
 
       if (_current != null && _current.type != ChipOpcodeType.INVALID) {
         console.error(
-            'current opcode: ${_current.type} (op: ${_current.operand1})');
+            'current opcode: ${_current.type} (op: 0x${_current.operand1?.toRadixString(16)})');
       }
 
       if (_callStack.isNotEmpty) {
@@ -47,14 +47,16 @@ class Chip8 {
         }
       }
 
-      console.error('Register I: 0x${regI.toRadixString(16)}');
+      console.error('Register I: 0x${regI?.toRadixString(16)}');
       for (int i = 0; i < registers.length; i++) {
-        console.error('Register V${i.toRadixString(16).toUpperCase()}: 0x${registers[i].toRadixString(16)}');
+        console.error(
+            'Register V${i.toRadixString(16).toUpperCase()}: 0x${registers[i].toRadixString(16)}');
       }
     } finally {
       delayTimer.stop();
       soundTimer.stop();
       await keyboard.close();
+      await screen.close();
     }
 
     return success;
@@ -86,8 +88,15 @@ class Chip8 {
   }
 
   Future runOpcode(ChipOpcode op, List<int> program) async {
-    if (op.type == ChipOpcodeType.CLEAR) {
+    if (op.type == ChipOpcodeType.CALL) {
+      await jump(op.operand1, program);
+    } else if (op.type == ChipOpcodeType.CLEAR) {
       screen.clear();
+    } else if (op.type == ChipOpcodeType.DRAW) {
+      registers[15] = screen.draw(
+              registers[op.operand1], registers[op.operand2], 8, op.operand3)
+          ? 1
+          : 0;
     } else if (op.type == ChipOpcodeType.RETURN) {
       if (_callStack.length < 2)
         throw new ChipException(
@@ -96,7 +105,7 @@ class Chip8 {
       _callStack.addLast(cur);
       return await jump(offset, program);
     } else if (op.type == ChipOpcodeType.SET_ADDR) {
-      regI = op.operand1;
+      regI = op.operand1 ?? 0;
     } else if (op.type == ChipOpcodeType.SET_CONST) {
       int target = op.operand1;
       if (target < 0 || target > 15)

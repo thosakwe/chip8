@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>CHIP-8</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.10/semantic.min.css">
+</head>
+<body>
+<div class="ui menu" style="border-radius: 0;">
+    <div class="header item">
+        <i class="game icon"></i>
+        CHIP-8
+    </div>
+    <div class="right menu">
+        <a href="https://github.com/thosakwe/chip8" target="_blank" class="item">
+            <i class="github icon"></i>
+            Created by Tobe Osakwe
+        </a>
+    </div>
+</div>
+<div class="ui container">
+    <div id="prompt-section">
+        <h1 class="ui header">
+            <i class="game icon"></i>
+            <div class="content">
+                CHIP-8
+            </div>
+        </h1>
+        <form id="prompt-form" class="ui form">
+            <div class="required field">
+                <label for="prompt-file">Load a ROM to emulate it:</label>
+                <div class="ui action input">
+                    <input id="prompt-file" type="file">
+                    <button class="ui button" type="submit">
+                        <i class="file icon"></i>
+                        Load ROM
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id="game-section" style="display: none">
+        <canvas id="screen" width="256" height="128"></canvas>
+    </div>
+</div>
+<script src="main.dart" type="application/dart"></script>
+<script src="packages/browser/dart.js" TYPE="text/javascript"></script>
+</body>
+</html>

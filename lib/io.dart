@@ -78,4 +78,7 @@ class IoScreen implements ChipScreen {
       stdout.writeln();
     }
   }
+
+  @override
+  Future close() async {}
 }
